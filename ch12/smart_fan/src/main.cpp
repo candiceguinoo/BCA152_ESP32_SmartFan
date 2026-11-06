@@ -8,7 +8,7 @@
 #include "secrets.h"
 
 // ---- Pins (same as the book) ----
-const uint8_t BTN_PINS[4]     = {19, 18, 5, 17};    // OFF, 33%, 66%, 100%
+const uint8_t BTN_PINS[4]     = {19, 18, 5, 21};    // OFF, 33%, 66%, 100%
 const int     BTN_LEVELS[4]   = {0, 33, 66, 100};
 const uint8_t RELAY_PINS[3]   = {32, 33, 25};       // low, normal, high
 const int     RELAY_LEVELS[3] = {33, 66, 100};
@@ -85,8 +85,37 @@ void pollDesired() {
   }
 }
 
+// Scans for networks, then connects. Restarts the board if it can't connect in 20 s.
+void connectWiFi() {
+  WiFi.persistent(false);
+  WiFi.mode(WIFI_STA);
+  WiFi.disconnect(true);
+  delay(200);
+
+  int n = WiFi.scanNetworks();
+  Serial.printf("Found %d networks:\n", n);
+  for (int i = 0; i < n; i++) {
+    Serial.printf("  %s (%d dBm, channel %d)\n",
+                  WiFi.SSID(i).c_str(), WiFi.RSSI(i), WiFi.channel(i));
+  }
+
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  Serial.print("Connecting to Wi-Fi");
+  unsigned long t0 = millis();
+  while (WiFi.status() != WL_CONNECTED) {
+    Serial.printf(" [status %d]", WiFi.status());
+    delay(500);
+    if (millis() - t0 > 20000) {
+      Serial.println("\nWi-Fi failed, restarting");
+      ESP.restart();
+    }
+  }
+  Serial.printf("\nConnected, IP: %s\n", WiFi.localIP().toString().c_str());
+}
+
 void setup() {
   Serial.begin(115200);
+  delay(500);
 
   for (int i = 0; i < 4; i++) pinMode(BTN_PINS[i], INPUT_PULLUP);
   for (int i = 0; i < 3; i++) {
@@ -96,14 +125,7 @@ void setup() {
   pinMode(PIN_OE, OUTPUT);
   digitalWrite(PIN_OE, HIGH);
 
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  Serial.print("Connecting to Wi-Fi");
-  while (WiFi.status() != WL_CONNECTED) {
-    Serial.print(".");
-    delay(500);
-  }
-  Serial.printf("\nConnected, IP: %s\n", WiFi.localIP().toString().c_str());
+  connectWiFi();
 
   config.api_key = API_KEY;
   config.database_url = DATABASE_URL;
