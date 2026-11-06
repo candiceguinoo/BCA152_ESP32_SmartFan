@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Smart Fan</title>
+<style>
+:root{--bg:#e8f1f5;--ink:#12303f;--muted:#587583;--panel:#f8fcfd;--line:#c4d6de;--blade:#2b7fa6;--accent:#12303f;--onaccent:#f8fcfd;--live:#d9480f}
+@media (prefers-color-scheme:dark){:root{--bg:#0d1b24;--ink:#e3f0f5;--muted:#8aa6b3;--panel:#15293a;--line:#27435a;--blade:#6cc0e5;--accent:#e3f0f5;--onaccent:#0d1b24;--live:#ff8a5c}}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font:16px/1.5 "Avenir Next","Segoe UI",system-ui,sans-serif;display:grid;place-items:center;padding:24px}
+main{width:100%;max-width:420px;text-align:center}
+h1{font-size:1.6rem;margin:0 0 4px;letter-spacing:-.01em}
+.sub{color:var(--muted);margin:0 0 20px;min-height:1.5em}
+#fan{width:200px;height:200px;color:var(--blade);--dur:0s}
+#fan .rotor{transform-origin:50% 50%;animation:spin var(--dur) linear infinite;animation-play-state:paused}
+#fan.on .rotor{animation-play-state:running}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){#fan .rotor{animation:none}}
+.level{font-size:3rem;font-weight:700;margin:8px 0 0;line-height:1}
+.level small{font-size:1rem;font-weight:500;color:var(--muted)}
+.speeds{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:22px 0}
+button{font:inherit;color:var(--ink);background:var(--panel);border:1.5px solid var(--line);border-radius:10px;padding:12px 4px;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--blade);outline-offset:2px}
+.speeds button[aria-pressed=true]{background:var(--accent);color:var(--onaccent);border-color:var(--accent)}
+#mic{width:100%;padding:16px;font-weight:600;border-radius:999px}
+#mic.listening{border-color:var(--live);color:var(--live)}
+#heard{color:var(--muted);min-height:3em;margin:12px 0 0}
+form{display:grid;gap:10px;text-align:left}
+input{font:inherit;padding:12px;border:1.5px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink)}
+.link{border:0;background:none;color:var(--muted);text-decoration:underline;margin-top:20px}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+  <h1>Smart Fan</h1>
+
+  <form id="login">
+    <p class="sub" style="margin:0">Sign in with the account you added in Firebase.</p>
+    <input id="email" type="email" placeholder="Email" autocomplete="username" required>
+    <input id="pass" type="password" placeholder="Password" autocomplete="current-password" required>
+    <button type="submit">Sign in</button>
+    <p id="loginerr" class="sub" role="alert"></p>
+  </form>
+
+  <section id="panel" hidden>
+    <p class="sub" id="status">Connecting…</p>
+    <svg id="fan" viewBox="-100 -100 200 200" role="img" aria-label="Fan">
+      <circle r="94" fill="none" stroke="currentColor" stroke-width="3" opacity=".35"/>
+      <g class="rotor" fill="currentColor">
+        <path id="blade" d="M0 0C-26-8-30-56-4-84C14-62 18-22 0 0Z"/>
+        <use href="#blade" transform="rotate(120)"/>
+        <use href="#blade" transform="rotate(240)"/>
+      </g>
+      <circle r="9" fill="var(--bg)" stroke="currentColor" stroke-width="3"/>
+    </svg>
+    <p class="level"><span id="lvl">0</span><small>%</small></p>
+
+    <div class="speeds" id="speeds">
+      <button data-v="0">Off</button>
+      <button data-v="33">Low</button>
+      <button data-v="66">Normal</button>
+      <button data-v="100">High</button>
+    </div>
+
+    <button id="mic">Tap and speak</button>
+    <p id="heard">Try “set fan to 50”, “increase by 10”, or “turn off”.</p>
+    <button class="link" id="out">Sign out</button>
+  </section>
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+
+// Paste your values from Project settings > Your apps > firebaseConfig
+const firebaseConfig = {
+  apiKey: "AIzaSyAETAw3kpP43DnhQOvDJ-fHHWKkzfMjblc",
+  authDomain: "smartfan-cb571.firebaseapp.com",
+  databaseURL: "https://smartfan-cb571-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "smartfan-cb571"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+const $ = id => document.getElementById(id);
+let reported = 0, desired = 0, started = false;
+
+const normalize = v => v <= 0 ? 0 : v <= 33 ? 33 : v <= 66 ? 66 : 100;   // same rule as the Alexa Lambda
+const send = v => set(ref(db, "fan/desired"), normalize(v));
+
+function render() {
+  $("lvl").textContent = reported;
+  $("fan").classList.toggle("on", reported > 0);
+  $("fan").style.setProperty("--dur", reported === 100 ? "0.35s" : reported === 66 ? "0.7s" : "1.4s");
+  document.querySelectorAll("#speeds button").forEach(b => b.setAttribute("aria-pressed", +b.dataset.v === reported));
+  $("status").textContent = desired !== reported ? "Waiting for the fan…" : reported ? "Fan is running" : "Fan is off";
+}
+
+function start() {
+  if (started) return; started = true;
+  onValue(ref(db, "fan/reported"), s => { reported = s.val() ?? 0; render(); });
+  onValue(ref(db, "fan/desired"),  s => { desired  = s.val() ?? 0; render(); });
+}
+
+$("login").addEventListener("submit", async e => {
+  e.preventDefault();
+  $("loginerr").textContent = "";
+  try { await signInWithEmailAndPassword(auth, $("email").value, $("pass").value); }
+  catch (err) { $("loginerr").textContent = "Sign-in failed: " + err.code; }
+});
+$("out").onclick = () => signOut(auth);
+onAuthStateChanged(auth, user => {
+  $("login").hidden = !!user; $("panel").hidden = !user;
+  if (user) start();
+});
+$("speeds").addEventListener("click", e => { if (e.target.dataset.v) send(+e.target.dataset.v); });
+
+// ---- Voice (browser speech recognition; works in Chrome and Edge) ----
+const words = [[/\b(off|stop)\b/, 0], [/\b(low|slow)\b/, 33], [/\b(medium|normal)\b/, 66], [/\b(high|fast|full|max|maximum)\b/, 100]];
+function handle(text) {
+  const t = text.toLowerCase(), num = t.match(/\d+/);
+  let target = null;
+  const dir = /\b(increase|raise|up)\b/.test(t) ? 1 : /\b(decrease|lower|reduce|down)\b/.test(t) ? -1 : 0;
+  if (dir) target = Math.max(0, Math.min(100, reported + dir * (num ? +num[0] : 10)));
+  else if (num) target = Math.min(100, +num[0]);
+  else for (const [re, v] of words) if (re.test(t)) { target = v; break; }
+  if (target === null) { $("heard").textContent = `Heard “${text}”. Say a number, or off, low, normal or high.`; return; }
+  send(target);
+  $("heard").textContent = `Heard “${text}”. Setting the fan to ${normalize(target)}%.`;
+}
+
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+if (!SR) { $("mic").disabled = true; $("heard").textContent = "Voice input needs Chrome or Edge. The speed buttons still work."; }
+else {
+  const rec = new SR(); rec.lang = "en-US";
+  rec.onstart = () => { $("mic").classList.add("listening"); $("mic").textContent = "Listening…"; };
+  rec.onend = () => { $("mic").classList.remove("listening"); $("mic").textContent = "Tap and speak"; };
+  rec.onresult = e => handle(e.results[0][0].transcript);
+  rec.onerror = e => { $("heard").textContent = "Voice error: " + e.error + (e.error === "not-allowed" ? ". Allow the microphone for this page." : ""); };
+  $("mic").onclick = () => rec.start();
+}
+</script>
+</body>
+</html>
