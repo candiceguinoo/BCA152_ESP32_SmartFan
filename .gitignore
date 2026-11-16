@@ -1,2 +1,3 @@
 .pio/
-include/secrets.h
+include/secrets.hBCA152_ESP32_SmartFan/
+*.zip
