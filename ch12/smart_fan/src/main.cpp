@@ -29,7 +29,7 @@ const bool RELAY_ACTIVE_LOW[3] = {true, true, true};
 
 // Set to 1 to print a line whenever a button changes between PRESSED and released.
 // At power-up all four should say "released". Use 0 for normal running.
-#define DEBUG_BUTTONS 1
+#define DEBUG_BUTTONS 0
 
 FirebaseData fbdo;
 FirebaseAuth auth;
