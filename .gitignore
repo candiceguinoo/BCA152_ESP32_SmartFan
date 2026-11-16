@@ -1,3 +1,4 @@
 .pio/
 include/secrets.hBCA152_ESP32_SmartFan/
 *.zip
+BCA152_ESP32_SmartFan/
