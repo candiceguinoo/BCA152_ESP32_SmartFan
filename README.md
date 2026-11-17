@@ -167,8 +167,22 @@ This section replaces the Wokwi simulation, because the project was built and te
 (pending)
 
 ## Unit Testing
-(pending
+(pending)
 
+## Functional Verification
+
+| Test | Expected | Result |
+|---|---|---|
+| Power-up, nothing pressed | No relay light on, four buttons read "released" | Pass |
+| Press Off, Low, Normal, High buttons | One `Fan level` line per press, matching relay lights, Firebase `reported` updates | Pass |
+| Relay lights | Off: none. Low: Module A relay 1. Normal: Module A relay 2. High: Module B relay 1 only | Pass |
+| Relays make no buzzing sound | No buzzing | Pass |
+| Web page buttons | Relays switch within about 1 to 2 seconds | Pass |
+| Press a physical button | Web page level and fan icon update | Pass |
+| Voice: "set fan to 50" | Normal (66), Module A relay 2 on | Pass |
+| Voice: "high", "increase by 10", "turn off" | High, +10 then rounded, Off | Pass |
+
+(pending)
 
 
 
