@@ -104,4 +104,12 @@ Buttons are handled before the Firebase check, so they work even while the inter
 -----
 
 
+## State Machine
+
+The fan has four states. Any button press, web click or voice command moves it to the requested level.
+
+(pending)
+
+
+
 
