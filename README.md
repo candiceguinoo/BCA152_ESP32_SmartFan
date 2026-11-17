@@ -39,16 +39,19 @@ The following table shows the main differences between the original implementati
 ----
 
 
+
 ## Hardware / Simulated Components
 
 All parts are real hardware. Nothing is simulated.
 
-- ESP32 WROOM-32 (AZ-Delivery DevKit V4)
-- 4 push buttons
-- 2 relay modules with 2 channels and 1 channel 
-- 5V supply for the relay modules (ESP32 VIN)
-- Breadboard
-- Jumper wires 
+| Component | Quantity | Description |
+|---|:---:|---|
+| ESP32 WROOM-32 (AZ-Delivery DevKit V4) | 1 | Main controller |
+| Push buttons | 4 | Used to select the fan speed |
+| 2-channel relay module | 1 | Produce clicking sounds and indicate fan level switching |
+| 1-channel relay module | 1 | Produce clicking sounds and indicate fan level switching |
+| Breadboard | 2 | Used for circuit connections |
+| Jumper wires | As needed | Used to connect the components |
 
 NOTE: No mains voltage or real fan was connected during testing. The relay outputs were tested for switching only.
 
