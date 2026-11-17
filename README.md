@@ -16,3 +16,14 @@ The following table shows the main differences between the original implementati
 | AWS IoT Core | Firebase Realtime Database |
 | AWS Lambda and Alexa Skill | Web page with browser voice recognition |
 | Logic converter and three relays | Relay modules connected directly to ESP32 GPIO pins |
+
+## Features
+
+- Four physical buttons: Off, Low (33%), Normal (66%), High (100%).
+- Web page with speed buttons, a spinning fan icon that shows the current level, and a status message.
+- Voice commands in the browser: "set fan to 50", "set to high", "low", "increase by 10", "turn off".
+- Two-way sync: a button press updates the web page, and a web or voice command switches the relays.
+- Wi-Fi scan and disconnect-reason output in the serial monitor for troubleshooting.
+- Credentials kept out of Git (`secrets.h` is ignored, `secrets.h.example` is the template).
+
+
