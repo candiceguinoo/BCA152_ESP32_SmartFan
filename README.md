@@ -55,4 +55,21 @@ All parts are real hardware. Nothing is simulated.
 
 NOTE: No mains voltage or real fan was connected during testing. The relay outputs were tested for switching only.
 
+## Pin Configuration
+
+| ESP32 pin | Connects to | Purpose |
+|---|---|---|
+| GPIO19 | Button 1, other leg to GND | Off |
+| GPIO18 | Button 2, other leg to GND | Low (33%) |
+| GPIO5 | Button 3, other leg to GND | Normal (66%) |
+| GPIO21 | Button 4, other leg to GND | High (100%) |
+| GPIO32 | 2-channel relay IN1 | Relay for Low |
+| GPIO33 | 2-channel relay IN2 | Relay for Normal |
+| GPIO25 | 1-channel relay IN | Relay for High |
+| VIN | VCC of both relay modules | Power supply |
+| GND | Common GND rail | Relay modules and buttons |
+
+NOTE: Both relay modules get their power through the ESP32 VIN pin. Buttons use the ESP32's internal pull-ups, so no resistors are needed. The relay modules are active-low: a relay switches on when its input is pulled LOW, and is switched off by letting the pin float.
+
+
 
