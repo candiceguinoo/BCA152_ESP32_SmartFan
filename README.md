@@ -196,4 +196,11 @@ This section replaces the Wokwi simulation, because the project was built and te
 ## Future Improvements
 (pending)
 
+## References and Acknowledgments
+
+- *Internet of Things with ESP32*, Packt Publishing, Chapter 12 (code: github.com/PacktPublishing/Internet-of-Things-with-ESP32).
+- Firebase documentation: Realtime Database and Authentication.
+- Firebase Arduino Client Library for ESP8266 and ESP32 (mobizt).
+- MDN Web Docs: Web Speech API (speech recognition).
+- An AI assistant (Claude, by Anthropic) was used for help with debugging and drafting this README. All hardware was wired, tested and verified by the student.
 
