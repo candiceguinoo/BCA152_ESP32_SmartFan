@@ -26,4 +26,14 @@ The following table shows the main differences between the original implementati
 - Wi-Fi scan and disconnect-reason output in the serial monitor for troubleshooting.
 - Credentials kept out of Git (`secrets.h` is ignored, `secrets.h.example` is the template).
 
+## Learning Objectives
+
+- Read buttons on GPIO pins with internal pull-ups and software debounce.
+- Drive relay modules from GPIO pins, including active-low behavior.
+- Connect an ESP32 to Wi-Fi and sign in to a cloud service.
+- Keep a device and a web client in sync with a desired/reported data model.
+- Build a small web client with Firebase Authentication, Realtime Database and the Web Speech API.
+- Debug hardware and network problems step by step, and record the process in Git history and `DEVLOG.md`.
+
+
 
