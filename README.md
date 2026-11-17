@@ -188,6 +188,10 @@ This section replaces the Wokwi simulation, because the project was built and te
 
 (pending)
 
+## Limitations
+
+- Alexa is not used. Voice control works only in the browser (Chrome or Edge).
+(pending)
 
 
 
