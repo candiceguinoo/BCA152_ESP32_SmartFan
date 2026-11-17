@@ -163,6 +163,13 @@ NOTE: Two switches in `main.cpp` help with testing: `RELAY_SELF_TEST` cycles the
 ## Photos and Video of the Working Circuit
 
 This section replaces the Wokwi simulation, because the project was built and tested on real hardware. 
+
 (pending)
+
+## Unit Testing
+(pending
+
+
+
 
 
