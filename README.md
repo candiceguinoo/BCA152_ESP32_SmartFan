@@ -138,3 +138,16 @@ You need VS Code with the PlatformIO extension, a Google account for Firebase, a
 5. **Wire the circuit** as in the Pin Configuration table, with the ESP32 unplugged.
 
 
+## Building the Project
+
+From the `smart_fan` folder in PowerShell:
+
+```powershell
+& "$env:USERPROFILE\.platformio\penv\Scripts\pio.exe" run -t upload
+& "$env:USERPROFILE\.platformio\penv\Scripts\pio.exe" device monitor
+```
+
+Press the EN button on the board after the monitor opens. You should see `Connected, IP: ...`, then `status = ready`, then `Firebase ready. Waiting for buttons or web commands.`
+
+Run the web page (voice recognition needs `localhost` or https):
+
