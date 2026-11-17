@@ -151,3 +151,12 @@ Press the EN button on the board after the monitor opens. You should see `Connec
 
 Run the web page (voice recognition needs `localhost` or https):
 
+```powershell
+cd web
+& "$env:USERPROFILE\.platformio\penv\Scripts\python.exe" -m http.server 8000
+```
+
+Open `http://localhost:8000` in Chrome or Edge and sign in with the web user.
+
+Two switches in `main.cpp` help with testing: `RELAY_SELF_TEST` cycles the relays once at boot, and `DEBUG_BUTTONS` prints a line each time a button changes state. Both are set to 0 for normal use.
+
