@@ -71,5 +71,18 @@ NOTE: No mains voltage or real fan was connected during testing. The relay outpu
 
 NOTE: Both relay modules get their power through the ESP32 VIN pin. Buttons use the ESP32's internal pull-ups, so no resistors are needed. The relay modules are active-low: a relay switches on when its input is pulled LOW, and is switched off by letting the pin float.
 
+## Task Design
+
+There are no separate tasks. The work is split into functions that `loop()` calls in order:
+
+| Function | Job |
+|---|---|
+| `handleButtons()` | Reads the four buttons with a 150 ms debounce and applies a level on a press |
+| `pollDesired()` | Reads `/fan/desired` once a second and applies it if it changed |
+| `applyLevel()` | Turns all relays off, waits 50 ms, then turns the right one on |
+| `publishLevel()` | Writes `desired` and `reported` to Firebase |
+| `connectWiFi()` | Scans networks, prints diagnostics and connects (restarts after 20 s) |
+
+NOTE: Buttons are handled before the Firebase check, so they work even while the internet is down.
 
 
