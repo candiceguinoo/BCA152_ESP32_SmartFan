@@ -36,8 +36,7 @@ The following table shows the main differences between the original implementati
 - Debug hardware and network problems step by step, and record the process in Git history and `DEVLOG.md`.
 
 ## System Architecture
-----
-
+(pending)
 
 
 ## Hardware / Simulated Components
@@ -101,7 +100,7 @@ There are no separate tasks. The work is split into functions that `loop()` call
 Buttons are handled before the Firebase check, so they work even while the internet is down.
 
 ## Inter-Task Communication
------
+(pending)
 
 
 ## State Machine
@@ -111,5 +110,31 @@ The fan has four states. Any button press, web click or voice command moves it t
 (pending)
 
 
+## Repository Structure
+
+(pending)
+
+
+## Getting Started
+
+You need VS Code with the PlatformIO extension, a Google account for Firebase, and a 2.4 GHz Wi-Fi network (the ESP32 cannot use 5 GHz).
+
+1. **Firebase:** create a project, add a Realtime Database, enable Email/Password sign-in, and add two users (one for the ESP32, one for the web page). Register a web app to get the web API key.
+2. **Database rules:** paste these in Realtime Database > Rules:
+
+   ```json
+   {
+     "rules": {
+       "fan": {
+         ".read": "auth != null",
+         ".write": "auth != null"
+       }
+     }
+   }
+   ```
+
+3. **Secrets:** copy `include/secrets.h.example` to `include/secrets.h` and fill in the Wi-Fi name and password, the web API key, and the ESP32 user's email and password.
+4. **Web page:** in `web/index.html`, replace `PASTE_YOUR_API_KEY` with the same web API key.
+5. **Wire the circuit** as in the Pin Configuration table, with the ESP32 unplugged.
 
 
