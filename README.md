@@ -86,3 +86,22 @@ There are no separate tasks. The work is split into functions that `loop()` call
 NOTE: Buttons are handled before the Firebase check, so they work even while the internet is down.
 
 
+## Task Design
+
+There are no separate tasks. The work is split into functions that `loop()` calls in order:
+
+| Function | Job |
+|---|---|
+| `handleButtons()` | Reads the four buttons with a 150 ms debounce and applies a level on a press |
+| `pollDesired()` | Reads `/fan/desired` once a second and applies it if it changed |
+| `applyLevel()` | Turns all relays off, waits 50 ms, then turns the right one on |
+| `publishLevel()` | Writes `desired` and `reported` to Firebase |
+| `connectWiFi()` | Scans networks, prints diagnostics and connects (restarts after 20 s) |
+
+Buttons are handled before the Firebase check, so they work even while the internet is down.
+
+## Inter-Task Communication
+-----
+
+
+
