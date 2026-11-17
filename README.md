@@ -35,5 +35,21 @@ The following table shows the main differences between the original implementati
 - Build a small web client with Firebase Authentication, Realtime Database and the Web Speech API.
 - Debug hardware and network problems step by step, and record the process in Git history and `DEVLOG.md`.
 
+## System Architecture
+----
+
+
+## Hardware / Simulated Components
+
+All parts are real hardware. Nothing is simulated.
+
+- ESP32 WROOM-32 (AZ-Delivery DevKit V4)
+- 4 push buttons
+- 2 relay modules with 2 channels and 1 channel 
+- 5V supply for the relay modules (ESP32 VIN)
+- Breadboard
+- Jumper wires 
+
+NOTE: No mains voltage or real fan was connected during testing. The relay outputs were tested for switching only.
 
 
